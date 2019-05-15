@@ -12,7 +12,7 @@ namespace ChickenVision
         public async Task<bool> IsDoorOpen()
         {
             HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Prediction-Key", "98f816acd37e42de9bcfa44d1316585f");
+            client.DefaultRequestHeaders.Add("Prediction-Key", "");
             //client.DefaultRequestHeaders.Add("Content-Type", "application/json");
             var values = new Dictionary<string, string>
                {
