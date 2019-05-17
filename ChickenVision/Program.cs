@@ -6,11 +6,11 @@ namespace ChickenVision
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine(System.DateTime.Now.ToString() +  " - Chicken AI service started");
             var myManager = new APIManager();
             var openDoor = myManager.IsDoorOpen();
 
-            Console.ReadLine();
+            //Console.ReadLine();
         }
     }
 }
