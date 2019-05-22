@@ -15,7 +15,7 @@ namespace ChickenVision
             try
             {
                 HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Prediction-Key", "");
+                client.DefaultRequestHeaders.Add("Prediction-Key", "https://github.com/mfdahm/ChickenAI.git");
                 //client.DefaultRequestHeaders.Add("Content-Type", "application/json");
                 var values = new Dictionary<string, string>
                {
