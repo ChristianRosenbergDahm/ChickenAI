@@ -10,60 +10,77 @@ namespace ChickenVision
 {
     public class APIManager
     {
-        public async Task<bool> IsDoorOpen()
+        public bool IsDoorOpen()
         {
             try
             {
                 HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Prediction-Key", "");
+                client.DefaultRequestHeaders.Add("Prediction-Key", "98f816acd37e42de9bcfa44d1316585f");
                 //client.DefaultRequestHeaders.Add("Content-Type", "application/json");
                 var values = new Dictionary<string, string>
                {
-                    { "Url", "http://christiandahm.dk/edge-itn2/closed1.png" }
-            };
+                    { "Url", "http://christiandahm.dk/edge-itn2/open1.png" }
+
+               };
 
                 var content = new FormUrlEncodedContent(values);
-                var response = await client.PostAsync("https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/4d013406-c917-4fc4-990f-e23914930051/classify/iterations/Iteration1/url", content);
-                var responseString = await response.Content.ReadAsStringAsync();
-                var jsonObject = ParseStringToJSon(responseString);
+                var response = client.PostAsync("https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/4d013406-c917-4fc4-990f-e23914930051/classify/iterations/Iteration1/url", content);
+                var responseString = response.Result.Content.ReadAsStringAsync();
+                var jsonObject = ParseStringToJSon(responseString.Result);
                 string openDoorStr = String.Empty;
 
                 foreach (var item in jsonObject)
                 {
                     if (item.Key == "predictions")
                     {
-                        openDoorStr = item.Value.Last.First.Last.ToString();
+                        openDoorStr = item.Value.First.First.Last.ToString();
                         //Console.WriteLine("Prediction open door: " + item.Value.Last.First.Last);
                     }
                 }
-                var mqttMan = new mqttManager();
+                //var mqttMan = new mqttManager();
+                var limit = float.Parse("0.5");
                 float openDoorfloat = float.Parse(openDoorStr);
-                if (openDoorfloat > 50)
+                if (openDoorfloat > limit)
                 {
                     Console.WriteLine(System.DateTime.Now.ToString() + " - Door might be open, prop: " + openDoorfloat);
                     // Notify MQTT queue
-                    mqttMan.PostToQueue("ChickenDoorOpen");
+                    //mqttMan.PostToQueue("ChickenDoorOpen");
+                    //SendMakerEventDoorIsOpen();
                     return true;
                 }
                 else
                 {
                     Console.WriteLine(System.DateTime.Now.ToString() + "  Door is Closed, prop: " + (1 - openDoorfloat));
-                    mqttMan.PostToQueue("ChickenDoorClosed");
+                    //mqttMan.PostToQueue("ChickenDoorClosed");
                     return false;
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine("Exception: " + e.Message);
                 throw;
             }
-
-            return true;
         }
         public JObject ParseStringToJSon(string data)
         {
             JObject json = JObject.Parse(data);
             return json;
+        }
+
+        public void SendMakerEventDoorIsOpen()
+        {
+            var client = new HttpClient();
+            //var response = client.GetAsync("https://maker.ifttt.com/trigger/ChickenDoorIsOpen/with/key/elUis2yEBQwp5OnALqburRiTGprWrwiSoiAV6uB-rRt");
+            var response = client.GetAsync("https://maker.ifttt.com/trigger/ChickenAI/with/key/elUis2yEBQwp5OnALqburRiTGprWrwiSoiAV6uB-rRt");
+            var responseString = response.Result.Content.ReadAsStringAsync();
+            if (response.Result.IsSuccessStatusCode)
+            {
+                Console.WriteLine(System.DateTime.Now + " - IFTTT is notified: ");
+            }
+            else
+            {
+                Console.WriteLine(System.DateTime.Now + " - IFTTT notification went wrong: ");
+            }
         }
 
     }
