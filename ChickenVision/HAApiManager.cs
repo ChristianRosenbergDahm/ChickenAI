@@ -14,19 +14,28 @@ namespace ChickenVision
             string longLivedToken = "";
             HttpClient client = new HttpClient();
             //client.DefaultRequestHeaders.Add("Prediction-Key", "https://github.com/mfdahm/ChickenAI.git");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5MGVmNTBhYzdiM2Y0NGM2YTJlMWQzYTIwN2Y4MGQ3ZCIsImlhdCI6MTU1ODUyNzk4MSwiZXhwIjoxODczODg3OTgxfQ.1Nh9B6_zeRevFNDBSW8bKJPUrToeVtme7iCfZ2d0LJc");
-            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+            //client.DefaultRequestHeaders.Add("Content-Type","application/x-www-form-urlencoded");
 
             //client.DefaultRequestHeaders.Add("Content-Type", "application/json");
             var values = new Dictionary<string, string>
                {
-                    { "state", "on" }
+                    { "state","on" }
             };
 
+            var stateOBJ = new ChickenState();
+            stateOBJ.state = "on";
             var content = new FormUrlEncodedContent(values);
-            var response = client.PostAsync("http://localhost:8123/api/states/input_boolean.chicken_dooropen", content);
+            var response = client.PostAsJsonAsync("http://10.0.0.50:8123/api/states/input_boolean.chicken_dooropen", stateOBJ);
             var responseString = response.Result.Content.ReadAsStringAsync();
-            Console.WriteLine(System.DateTime.Now.ToString() + " - Response from HA: " + responseString);
+            Console.WriteLine(System.DateTime.Now.ToString() + " - Response from HA: " + responseString.Status);
         }
     }
+
+    class ChickenState
+    {
+        public string state { get; set; }
+    }
+
 }

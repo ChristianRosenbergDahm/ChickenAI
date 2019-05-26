@@ -15,6 +15,11 @@ namespace ChickenVision
                     Console.WriteLine(System.DateTime.Now.ToString() + " - Chicken AI service started at nine");
                     var myManager = new APIManager();
                     var openDoor = myManager.IsDoorOpen();
+                    if (openDoor == true)
+                    {
+                        var myHASSMan = new HAApiManager();
+                        myHASSMan.SetDoorOpenInHASS();
+                    }
                     Console.WriteLine(System.DateTime.Now.ToString() + " - Chicken AI service ended at nine");
                 //}
                 //System.Threading.Thread.Sleep(300000); // 5 min.
