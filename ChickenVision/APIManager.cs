@@ -15,11 +15,11 @@ namespace ChickenVision
             try
             {
                 HttpClient client = new HttpClient();
-                client.DefaultRequestHeaders.Add("Prediction-Key", "");
+                client.DefaultRequestHeaders.Add("Prediction-Key", "98f816acd37e42de9bcfa44d1316585f");
                 var values = new Dictionary<string, string>
                {
                    
-                    { "Url", "" }
+                    { "Url", "http://gusterd.asuscomm.com:92/Camera1/lastsnap.jpg" }
                };
 
                 var content = new FormUrlEncodedContent(values);
@@ -88,21 +88,6 @@ namespace ChickenVision
             return json;
         }
 
-        //public void SendMakerEventDoorIsOpen()
-        //{
-        //    var client = new HttpClient();
-        //    //var response = client.GetAsync("https://maker.ifttt.com/trigger/ChickenDoorIsOpen/with/key/elUis2yEBQwp5OnALqburRiTGprWrwiSoiAV6uB-rRt");
-        //    var response = client.GetAsync("https://maker.ifttt.com/trigger/ChickenAI/with/key/elUis2yEBQwp5OnALqburRiTGprWrwiSoiAV6uB-rRt");
-        //    var responseString = response.Result.Content.ReadAsStringAsync();
-        //    if (response.Result.IsSuccessStatusCode)
-        //    {
-        //        Console.WriteLine(System.DateTime.Now + " - IFTTT is notified: ");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine(System.DateTime.Now + " - IFTTT notification went wrong: ");
-        //    }
-        //}
 
     }
 }
