@@ -18,37 +18,63 @@ namespace ChickenVision
                 client.DefaultRequestHeaders.Add("Prediction-Key", "");
                 var values = new Dictionary<string, string>
                {
-                    { "Url", "http://gusterd.asuscomm.com:92/Camera1/lastsnap.jpg" }
-                    //{ "Url", "http://gusterd.asuscomm.com:92/picture/1/current/?_username=admin&_signature=185ed9f3de0740530dcef31ccf7bd346529388b3" }
-                    
-
+                   
+                    { "Url", "" }
                };
 
                 var content = new FormUrlEncodedContent(values);
-                var response = client.PostAsync("https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/4d013406-c917-4fc4-990f-e23914930051/classify/iterations/Iteration1/url", content);
+                var response = client.PostAsync("https://westeurope.api.cognitive.microsoft.com/customvision/v3.0/Prediction/4d013406-c917-4fc4-990f-e23914930051/classify/iterations/Iteration5/url", content);
                 var responseString = response.Result.Content.ReadAsStringAsync();
                 var jsonObject = ParseStringToJSon(responseString.Result);
+                if (jsonObject.ToString().Contains("Invalid url:"))
+                {
+                    Console.WriteLine(System.DateTime.Now.ToString() + " - Cognitive service could not read image, invalid URL");
+                }
+
                 string openDoorStr = String.Empty;
+
+                //Console.WriteLine(jsonObject.ToString());
 
                 foreach (var item in jsonObject)
                 {
                     if (item.Key == "predictions")
                     {
-                        openDoorStr = item.Value.First.First.Last.ToString();
+                        
+                        var tagName = item.Value.First.Last.Last;
+                        Console.WriteLine(System.DateTime.Now.ToString() + " - Tagname: " + tagName.ToString());
+                        if (tagName.ToString().ToLower() == "Door is closed".ToLower())
+                        {
+                            openDoorStr = item.Value.First.First.Last.ToString();
+                            float openDoorfloat = float.Parse(openDoorStr);
+                            Console.WriteLine(System.DateTime.Now.ToString() + " - Door is Closed, prop: " + (openDoorfloat));
+                            return false;
+                        }
+
+                        if (tagName.ToString().ToLower() == "Door is open".ToLower())
+                        {
+                            openDoorStr = item.Value.First.First.Last.ToString();
+                            float openDoorfloat = float.Parse(openDoorStr);
+                            Console.WriteLine(System.DateTime.Now.ToString() + " - Door is open, prop: " + (openDoorfloat));
+                            return true;
+                        }
                     }
                 }
-                var limit = float.Parse("0.5");
-                float openDoorfloat = float.Parse(openDoorStr);
-                if (openDoorfloat > limit)
-                {
-                    Console.WriteLine(System.DateTime.Now.ToString() + " - Door might be open, prop: " + openDoorfloat);
-                    return true;
-                }
-                else
-                {
-                    Console.WriteLine(System.DateTime.Now.ToString() + "  Door is Closed, prop: " + (1 - openDoorfloat));
-                    return false;
-                }
+
+                Console.WriteLine(System.DateTime.Now.ToString() + " - Could not decide...");
+                return true;
+
+                //var limit = float.Parse("0.5");
+                //float openDoorfloat = float.Parse(openDoorStr);
+                //if (openDoorfloat > limit)
+                //{
+                //    Console.WriteLine(System.DateTime.Now.ToString() + " - Door might be open, prop: " + openDoorfloat);
+                //    return true;
+                //}
+                //else
+                //{
+                //    Console.WriteLine(System.DateTime.Now.ToString() + "  Door is Closed, prop: " + (1 - openDoorfloat));
+                //    return false;
+                //}
             }
             catch (Exception e)
             {
